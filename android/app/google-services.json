@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "404949686772",
+    "project_id": "fatendfit-5c8f3",
+    "storage_bucket": "fatendfit-5c8f3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:404949686772:android:6b67d42ee7da443bd381a1",
+        "android_client_info": {
+          "package_name": "com.fitness.fat_end_fit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKqY2fn2xZma1cCGna1i4n6MKPIy2CHuU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
