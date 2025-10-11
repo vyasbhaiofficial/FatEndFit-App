@@ -101,11 +101,13 @@
 //     );
 //   }
 // }
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:fat_end_fit/utils/app_toast.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../utils/app_color.dart';
+import '../../utils/app_print.dart';
 import '../../utils/app_text_style.dart';
 import '../../utils/app_strings.dart';
 // import '../../utils/common/app_logo.dart';
@@ -150,45 +152,122 @@ class LoginScreen extends StatelessWidget {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+
                         Text(
                           AppString.enterMobileNumber + ":",
                           style: AppTextStyle.label,
                         ),
                         const SizedBox(height: 8),
-                        TextField(
-                          cursorColor: AppColor.primary,
-                          keyboardType: TextInputType.number,
-                          maxLength: 10,
-                          onChanged: (val) => controller.mobileNumber.value = val,
-                          decoration: InputDecoration(
-                            hintText: AppString.phoneNumber,
-                            counterText: "",hintStyle: TextStyle(color: AppColor.primary,fontSize: 14),
-                            filled: true,
-                            fillColor: AppColor.lightGrey,
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 22, vertical: 12),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30),
-                              borderSide:
-                              const BorderSide(color: AppColor.borderGrey),
+                        // TextField(
+                        //   cursorColor: AppColor.primary,
+                        //   keyboardType: TextInputType.number,
+                        //   maxLength: 10,
+                        //   onChanged: (val) => controller.mobileNumber.value = val,
+                        //   decoration: InputDecoration(
+                        //     hintText: AppString.phoneNumber,
+                        //     counterText: "",hintStyle: TextStyle(color: AppColor.primary,fontSize: 14),
+                        //     filled: true,
+                        //     fillColor: AppColor.lightGrey,
+                        //     contentPadding: const EdgeInsets.symmetric(
+                        //         horizontal: 22, vertical: 12),
+                        //     border: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.circular(30),
+                        //       borderSide:
+                        //       const BorderSide(color: AppColor.borderGrey),
+                        //     ),
+                        //     disabledBorder: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.circular(30),
+                        //       borderSide:
+                        //       const BorderSide(color: AppColor.borderGrey),
+                        //     ),
+                        //     enabledBorder: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.circular(30),
+                        //       borderSide:
+                        //       const BorderSide(color: AppColor.black),
+                        //     ),
+                        //     focusedBorder: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.circular(30),
+                        //       borderSide:
+                        //       const BorderSide(color: AppColor.black),
+                        //     ),
+                        //   ),
+                        // ),
+                        Row(
+                          children: [
+                            // Container(
+                            //   decoration: BoxDecoration(
+                            //     color: AppColor.lightGrey,
+                            //     borderRadius: BorderRadius.circular(30),
+                            //     border: Border.all(color: AppColor.black),
+                            //   ),
+                            //   padding: const EdgeInsets.symmetric(horizontal: 5),
+                            //   child: CountryCodePicker(
+                            //     onChanged: (code) {
+                            //       controller.countryCode.value = code.dialCode ?? "+91";
+                            //     },
+                            //     initialSelection: 'IN',
+                            //     favorite: ['+91', 'IN'],
+                            //     showCountryOnly: false,
+                            //     showOnlyCountryWhenClosed: false,
+                            //     alignLeft: false,
+                            //     padding: EdgeInsets.zero,
+                            //     textStyle: const TextStyle(
+                            //       color: AppColor.primary,
+                            //       fontSize: 14,
+                            //     ),
+                            //     showFlag: false, // hides flag — only show code like +91
+                            //   ),
+                            // ),
+                            // const SizedBox(width: 8),
+                            Expanded(
+                              child: TextField(
+                                cursorColor: AppColor.primary,
+                                keyboardType: TextInputType.number,
+                                maxLength: controller.phoneLengthByCountry[controller.countryCode.value] ?? 12,
+                                onChanged: (val) => controller.mobileNumber.value = val,
+                                decoration: InputDecoration(
+                                  prefixIcon: CountryCodePicker(
+                                    onChanged: (code) {
+                                      controller.countryCode.value = code.dialCode ?? "+91";
+                                      AppLogs.log("Selected country code: ${code.code}");
+                                    },
+                                    initialSelection: 'IN',
+                                    favorite: ['+91', 'IN'],
+                                    showCountryOnly: false,
+                                    showOnlyCountryWhenClosed: false,
+                                    alignLeft: false,
+                                    padding: EdgeInsets.zero,
+                                    textStyle: const TextStyle(
+                                      color: AppColor.primary,
+                                      fontSize: 14,
+                                    ),
+                                    showFlag: false, // hides flag — only show code like +91
+                                  ),
+                                  hintText: AppString.phoneNumber,
+                                  counterText: "",
+                                  hintStyle: const TextStyle(color: AppColor.primary, fontSize: 14),
+                                  filled: true,
+                                  fillColor: AppColor.lightGrey,
+                                  contentPadding:
+                                  const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                    borderSide: const BorderSide(color: AppColor.borderGrey),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                    borderSide: const BorderSide(color: AppColor.black),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                    borderSide: const BorderSide(color: AppColor.black),
+                                  ),
+                                ),
+                              ),
                             ),
-                            disabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30),
-                              borderSide:
-                              const BorderSide(color: AppColor.borderGrey),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30),
-                              borderSide:
-                              const BorderSide(color: AppColor.black),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30),
-                              borderSide:
-                              const BorderSide(color: AppColor.black),
-                            ),
-                          ),
-                        ),
+                          ],
+                        )
+
                       ],
                     );
                   } else {

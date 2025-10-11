@@ -64,107 +64,6 @@ class AppApi {
 
   Completer<void>? _refreshCompleter;
 
-  // void _setupInterceptors() {
-  //   _dio.interceptors.add(
-  //     InterceptorsWrapper(
-  //       onError: (error, handler) async {
-  //         final statusCode = error.response?.statusCode;
-  //
-  //         if (statusCode == 401) {
-  //           final refreshToken = await AppStorage().read<String>("refreshToken");
-  //
-  //           if (refreshToken == null || refreshToken.isEmpty) {
-  //             AppLogs.log("❌ No refresh token found", tag: "TOKEN", color: Colors.red);
-  //             return handler.next(error);
-  //           }
-  //
-  //           // if a refresh is already happening, wait for it
-  //           if (_refreshCompleter != null) {
-  //             AppLogs.log("⏳ Waiting for ongoing token refresh...", tag: "TOKEN", color: Colors.yellow);
-  //             await _refreshCompleter!.future;
-  //
-  //             // retry request after refresh completes
-  //             final newHeaders = Map<String, dynamic>.from(error.requestOptions.headers);
-  //             newHeaders["Authorization"] = "Bearer ${AppStorage().read<String>("token")}";
-  //
-  //             final retryResponse = await _dio.request(
-  //               error.requestOptions.path,
-  //               data: error.requestOptions.data,
-  //               queryParameters: error.requestOptions.queryParameters,
-  //               options: Options(
-  //                 method: error.requestOptions.method,
-  //                 headers: newHeaders,
-  //               ),
-  //             );
-  //
-  //             return handler.resolve(retryResponse);
-  //           }
-  //
-  //           // start a new refresh
-  //           _refreshCompleter = Completer<void>();
-  //           try {
-  //             AppLogs.log("🔄 Refreshing token...", tag: "TOKEN", color: Colors.yellow);
-  //
-  //             final refreshResponse = await _dio.post(
-  //               ApiConfig.refreshToken,
-  //               data: {"refreshToken": refreshToken},
-  //             );
-  //
-  //             final refreshData = refreshResponse.data;
-  //             AppLogs.log("refreshData - $refreshData", tag: "TOKEN", color: Colors.green);
-  //
-  //             if (refreshResponse.statusCode == 200 &&
-  //                 refreshData != null &&
-  //                 refreshData["success"] == true &&
-  //                 refreshData["data"] != null) {
-  //               final newAccessToken = refreshData["data"]["accessToken"];
-  //               final newRefreshToken = refreshData["data"]["refreshToken"];
-  //
-  //               if (newAccessToken != null) {
-  //                 await AppStorage().save("token", newAccessToken);
-  //                 setAuthToken(newAccessToken);
-  //               }
-  //               if (newRefreshToken != null) {
-  //                 await AppStorage().save("refreshToken", newRefreshToken);
-  //               }
-  //
-  //               AppLogs.log("✅ Token refreshed", tag: "TOKEN", color: Colors.green);
-  //
-  //               _refreshCompleter?.complete(); // notify others
-  //
-  //               // retry the failed request immediately
-  //               final retryResponse = await _dio.request(
-  //                 error.requestOptions.path,
-  //                 data: error.requestOptions.data,
-  //                 queryParameters: error.requestOptions.queryParameters,
-  //                 options: Options(
-  //                   method: error.requestOptions.method,
-  //                   headers: error.requestOptions.headers,
-  //                 ),
-  //               );
-  //
-  //               return handler.resolve(retryResponse);
-  //             } else {
-  //               AppLogs.log("❌ Token refresh failed", tag: "TOKEN", color: Colors.red);
-  //               // await AppStorage().remove("token");
-  //               // await AppStorage().remove("refreshToken");
-  //               _refreshCompleter?.completeError(Exception("Token refresh failed"));
-  //             }
-  //           } catch (e) {
-  //             AppLogs.log("❌ Refresh error: $e", tag: "TOKEN", color: Colors.red);
-  //             // await AppStorage().remove("token");
-  //             // await AppStorage().remove("refreshToken");
-  //             _refreshCompleter?.completeError(e);
-  //           } finally {
-  //             _refreshCompleter = null;
-  //           }
-  //         }
-  //
-  //         handler.next(error);
-  //       },
-  //     ),
-  //   );
-  // }
   void _setupInterceptors() {
     _dio.interceptors.add(
       InterceptorsWrapper(
@@ -340,6 +239,8 @@ class AppApi {
         Map<String, dynamic>? queryParameters,
         Options? options,
       }) async {
+    final fullUrl = "${_dio.options.baseUrl}$endpoint";
+
     try {
       AppLogs.log('GET Request: $endpoint', tag: 'API_GET', color: Colors.blue);
 
@@ -349,11 +250,24 @@ class AppApi {
         options: options,
       );
 
+      _logApiDetails(
+        method: "GET",
+        url: fullUrl,
+        query: queryParameters,
+        response: response,
+      );
+
       return ApiResponse<T>.success(
         response.data as T,
         statusCode: response.statusCode,
       );
     } on DioException catch (e) {
+      _logApiDetails(
+        method: "GET",
+        url: fullUrl,
+        query: queryParameters,
+        error: e,
+      );
       return _handleError<T>(e);
     } catch (e) {
       AppLogs.log('Unexpected error in GET: $e', tag: 'API_ERROR', color: Colors.red);
@@ -368,6 +282,8 @@ class AppApi {
         Map<String, dynamic>? queryParameters,
         Options? options,
       }) async {
+    final fullUrl = "${_dio.options.baseUrl}$endpoint";
+
     try {
       AppLogs.log('POST Request: $endpoint', tag: 'API_POST', color: Colors.blue);
 
@@ -378,13 +294,29 @@ class AppApi {
         options: options,
       );
 
+      _logApiDetails(
+        method: "POST",
+        url: fullUrl,
+        requestBody: data,
+        query: queryParameters,
+        response: response,
+      );
+
       return ApiResponse<T>.success(
         response.data as T,
         statusCode: response.statusCode,
       );
     } on DioException catch (e) {
+      _logApiDetails(
+        method: "POST",
+        url: fullUrl,
+        requestBody: data,
+        query: queryParameters,
+        error: e,
+      );
       return _handleError<T>(e);
     } catch (e) {
+
       AppLogs.log('Unexpected error in POST: $e', tag: 'API_ERROR', color: Colors.red);
       return ApiResponse<T>.error('Unexpected error occurred');
     }
@@ -397,6 +329,8 @@ class AppApi {
         Map<String, dynamic>? queryParameters,
         Options? options,
       }) async {
+    final fullUrl = "${_dio.options.baseUrl}$endpoint";
+
     try {
       AppLogs.log('PUT Request: $endpoint', tag: 'API_PUT', color: Colors.blue);
 
@@ -543,6 +477,60 @@ class AppApi {
     AppLogs.log('All requests cancelled', tag: 'API_CANCEL', color: Colors.yellow);
   }
 
+}
+
+void _logApiDetails({
+  required String method,
+  required String url,
+  dynamic requestBody,
+  Map<String, dynamic>? query,
+  Response? response,
+  DioException? error,
+}) {
+  final buffer = StringBuffer();
+
+  buffer.writeln("\n============= ${_getMethodColor(method)} $method =============");
+  buffer.writeln("URL: $url");
+
+  if (query != null && query.isNotEmpty) {
+    buffer.writeln("Query Params: $query");
+  }
+
+  if (requestBody != null) {
+    buffer.writeln("Request Body: $requestBody");
+  }
+
+  if (response != null) {
+    buffer.writeln("Status Code: ${response.statusCode}");
+    buffer.writeln("Response: ${response.data}");
+
+    final msg = response.data is Map && response.data['message'] != null
+        ? response.data['message']
+        : null;
+    if (msg != null) buffer.writeln("Message: $msg");
+  }
+
+  if (error != null) {
+    final statusCode = error.response?.statusCode;
+    final msg = error.response?.data?['message'] ?? error.message ?? 'Unknown error';
+    buffer.writeln("Status Code: $statusCode");
+    buffer.writeln("❌ Error: $msg");
+  }
+
+  buffer.writeln("============ ${error != null ? 'END (ERROR)' : 'END'}: $url =============\n");
+
+  AppLogs.log(buffer.toString(), tag: 'API_LOG', color: error != null ? Colors.red : Colors.green);
+}
+
+String _getMethodColor(String method) {
+  switch (method.toUpperCase()) {
+    case 'GET': return '🟩';
+    case 'POST': return '🟦';
+    case 'PUT': return '🟨';
+    case 'PATCH': return '🟧';
+    case 'DELETE': return '🟥';
+    default: return '⚪';
+  }
 }
 
 
@@ -811,6 +799,109 @@ final List<Function()> _retryQueue = [];
 //             await AppStorage().remove("refreshToken");
 //           } finally {
 //             _isRefreshing = false;
+//           }
+//         }
+//
+//         handler.next(error);
+//       },
+//     ),
+//   );
+// }
+
+
+// void _setupInterceptors() {
+//   _dio.interceptors.add(
+//     InterceptorsWrapper(
+//       onError: (error, handler) async {
+//         final statusCode = error.response?.statusCode;
+//
+//         if (statusCode == 401) {
+//           final refreshToken = await AppStorage().read<String>("refreshToken");
+//
+//           if (refreshToken == null || refreshToken.isEmpty) {
+//             AppLogs.log("❌ No refresh token found", tag: "TOKEN", color: Colors.red);
+//             return handler.next(error);
+//           }
+//
+//           // if a refresh is already happening, wait for it
+//           if (_refreshCompleter != null) {
+//             AppLogs.log("⏳ Waiting for ongoing token refresh...", tag: "TOKEN", color: Colors.yellow);
+//             await _refreshCompleter!.future;
+//
+//             // retry request after refresh completes
+//             final newHeaders = Map<String, dynamic>.from(error.requestOptions.headers);
+//             newHeaders["Authorization"] = "Bearer ${AppStorage().read<String>("token")}";
+//
+//             final retryResponse = await _dio.request(
+//               error.requestOptions.path,
+//               data: error.requestOptions.data,
+//               queryParameters: error.requestOptions.queryParameters,
+//               options: Options(
+//                 method: error.requestOptions.method,
+//                 headers: newHeaders,
+//               ),
+//             );
+//
+//             return handler.resolve(retryResponse);
+//           }
+//
+//           // start a new refresh
+//           _refreshCompleter = Completer<void>();
+//           try {
+//             AppLogs.log("🔄 Refreshing token...", tag: "TOKEN", color: Colors.yellow);
+//
+//             final refreshResponse = await _dio.post(
+//               ApiConfig.refreshToken,
+//               data: {"refreshToken": refreshToken},
+//             );
+//
+//             final refreshData = refreshResponse.data;
+//             AppLogs.log("refreshData - $refreshData", tag: "TOKEN", color: Colors.green);
+//
+//             if (refreshResponse.statusCode == 200 &&
+//                 refreshData != null &&
+//                 refreshData["success"] == true &&
+//                 refreshData["data"] != null) {
+//               final newAccessToken = refreshData["data"]["accessToken"];
+//               final newRefreshToken = refreshData["data"]["refreshToken"];
+//
+//               if (newAccessToken != null) {
+//                 await AppStorage().save("token", newAccessToken);
+//                 setAuthToken(newAccessToken);
+//               }
+//               if (newRefreshToken != null) {
+//                 await AppStorage().save("refreshToken", newRefreshToken);
+//               }
+//
+//               AppLogs.log("✅ Token refreshed", tag: "TOKEN", color: Colors.green);
+//
+//               _refreshCompleter?.complete(); // notify others
+//
+//               // retry the failed request immediately
+//               final retryResponse = await _dio.request(
+//                 error.requestOptions.path,
+//                 data: error.requestOptions.data,
+//                 queryParameters: error.requestOptions.queryParameters,
+//                 options: Options(
+//                   method: error.requestOptions.method,
+//                   headers: error.requestOptions.headers,
+//                 ),
+//               );
+//
+//               return handler.resolve(retryResponse);
+//             } else {
+//               AppLogs.log("❌ Token refresh failed", tag: "TOKEN", color: Colors.red);
+//               // await AppStorage().remove("token");
+//               // await AppStorage().remove("refreshToken");
+//               _refreshCompleter?.completeError(Exception("Token refresh failed"));
+//             }
+//           } catch (e) {
+//             AppLogs.log("❌ Refresh error: $e", tag: "TOKEN", color: Colors.red);
+//             // await AppStorage().remove("token");
+//             // await AppStorage().remove("refreshToken");
+//             _refreshCompleter?.completeError(e);
+//           } finally {
+//             _refreshCompleter = null;
 //           }
 //         }
 //

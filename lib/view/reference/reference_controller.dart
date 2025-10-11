@@ -11,6 +11,20 @@ import 'model/reference_model.dart';
 
 class ReferenceController extends GetxController {
   var isLoading = false.obs;
+  var countryCode = "+91".obs;
+
+  final Map<String, int> phoneLengthByCountry = {
+    '+91': 10, // India
+    '+1': 10,  // US/Canada
+    '+86': 11, // China
+    '+49': 11, // Germany
+    '+55': 11, // Brazil
+    '+65': 8,  // Singapore
+    '+81': 10, // Japan
+    '+44': 10, // UK
+    '+33': 9,  // France
+    '+61': 9,  // Australia
+  };
 
   Future<void> createReference({
     required String name,
@@ -25,7 +39,7 @@ class ReferenceController extends GetxController {
         ApiConfig.createUserReference,
         data: {
           "name": name,
-          "mobile": mobile,
+          "mobile": countryCode + mobile,
           "relation": relation,
         },
       );

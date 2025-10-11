@@ -1,3 +1,4 @@
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:fat_end_fit/utils/app_navigation.dart';
 import 'package:fat_end_fit/utils/app_toast.dart';
 import 'package:fat_end_fit/view/reference/reference_controller.dart';
@@ -106,7 +107,26 @@ class ReferenceScreen extends StatelessWidget {
                 textColor: AppColor.textWhite,
               ),
               const SizedBox(height: 16),
-              CommonTextField(
+              Obx(() => CommonTextField(
+                maxLength: controller.phoneLengthByCountry[controller.countryCode.value] ?? 12,
+                prefixIcon: CountryCodePicker(margin: EdgeInsets.zero,
+
+                  onChanged: (code) {
+                    controller.countryCode.value = code.dialCode ?? "+91";
+                    // AppLogs.log("Selected country code: ${code.code}");
+                  },
+                  initialSelection: 'IN',
+                  favorite: ['+91', 'IN'],
+                  showCountryOnly: false,
+                  showOnlyCountryWhenClosed: false,
+                  alignLeft: false,
+                  padding: EdgeInsets.zero,
+                  textStyle: const TextStyle(
+                    color: AppColor.white,
+                    fontSize: 14,
+                  ),
+                  showFlag: false, // hides flag — only show code like +91
+                ),
                 hintText: AppString.mobileNumber,
                 controller: mobileCtrl,
                 fillColor: AppColor.black.withOpacity(0.7),
@@ -114,9 +134,10 @@ class ReferenceScreen extends StatelessWidget {
                 textColor: AppColor.textWhite,
                 keyboardType: TextInputType.number,inputFormatters: [
 
-                  LengthLimitingTextInputFormatter(10), FilteringTextInputFormatter.digitsOnly,
+                // LengthLimitingTextInputFormatter(10),
+                FilteringTextInputFormatter.digitsOnly,
               ],
-              ),
+              ),),
               const SizedBox(height: 16),
               CommonTextField(
                 hintText: AppString.relation,

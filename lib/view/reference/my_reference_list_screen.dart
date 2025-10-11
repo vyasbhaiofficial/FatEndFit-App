@@ -134,13 +134,13 @@ class _MyReferenceScreenState extends State<MyReferenceScreen> {
                               child: Column(mainAxisAlignment: MainAxisAlignment.start,crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   AppText(
-                                    "${item.name}",
+                                    item.name,
                                     fontSize: 14,
                                     color: AppColor.textBlack,
                                     fontWeight: FontWeight.w800,
                                   ),
                                   AppText(
-                                    "${formatMobile(item.mobile)}",
+                                    formatMobile(item.mobile,""),
                                     fontSize: 14,
                                     color: AppColor.textBlack,
                                     fontWeight: FontWeight.w800,

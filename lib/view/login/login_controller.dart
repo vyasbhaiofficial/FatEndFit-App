@@ -73,6 +73,7 @@ import '../profile/profile_controller.dart';
 
 class LoginController extends GetxController {
   var mobileNumber = ''.obs;
+  var countryCode = '+91'.obs;
   var otp = ''.obs;
   var isLoading = false.obs;
   var isOtpSent = false.obs;
@@ -82,6 +83,20 @@ class LoginController extends GetxController {
   String? _token;
   String? _refreshToken;
   bool? isProfileUpdated;
+
+  final Map<String, int> phoneLengthByCountry = {
+    '+91': 10, // India
+    '+1': 10,  // US/Canada
+    '+86': 11, // China
+    '+49': 11, // Germany
+    '+55': 11, // Brazil
+    '+65': 8,  // Singapore
+    '+81': 10, // Japan
+    '+44': 10, // UK
+    '+33': 9,  // France
+    '+61': 9,  // Australia
+  };
+
 
   final AppApi _apiService = AppApi.getInstance();
 
@@ -97,7 +112,15 @@ class LoginController extends GetxController {
 
   /// 🔹 Send OTP API Call
   Future<void> sendOtp() async {
-    if (mobileNumber.value.length != 10) {
+    final int expectedLength = phoneLengthByCountry[countryCode.value] ?? 12;
+
+// Validate length
+    if (mobileNumber.value.length < 6 || mobileNumber.value.length > expectedLength) {
+      AppToast.error("Please enter a valid mobile number for ${countryCode.value}");
+      return;
+    }
+
+    if (mobileNumber.value.length >= 12 || mobileNumber.value.length < 6) {
       AppToast.error("Please enter a valid mobile number");
       return;
     }
@@ -109,7 +132,8 @@ class LoginController extends GetxController {
       final response = await _apiService.post<Map<String, dynamic>>(
         ApiConfig.login,
         data: {
-          "mobileNumber": mobileNumber.value,
+          "mobilePrefix" : countryCode.value,
+          "mobileNumber": /*countryCode.value + */mobileNumber.value,
           "fcmToken": "dummy_fcm_token_here",
         },
       );

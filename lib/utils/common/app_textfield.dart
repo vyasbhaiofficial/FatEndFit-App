@@ -20,6 +20,7 @@ class CommonTextField extends StatelessWidget {
   final Color? enabledBorderColor;
   final void Function(String)? onChanged;
   final int? maxLength;
+  final Widget? prefixIcon;
 
   const CommonTextField({
     super.key,
@@ -36,6 +37,7 @@ class CommonTextField extends StatelessWidget {
     this.horizontalPadding = 16,
     this.obscureText = false,
     this.onChanged,
+    this.prefixIcon,
     this.maxLength,
     this.textColor = AppColor.textWhite,
   });
@@ -55,6 +57,7 @@ class CommonTextField extends StatelessWidget {
         fontWeight: FontWeight.w500,
       ),
       decoration: InputDecoration(
+        prefixIcon: prefixIcon,
         hintText: hintText,
         hintStyle: TextStyle(
           color: textColor,

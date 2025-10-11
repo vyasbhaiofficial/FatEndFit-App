@@ -132,8 +132,8 @@ class ProfileScreen extends StatelessWidget {
                 // 🔹 Form-style fields
                 ProfileField(
                   label: AppString.contactNumber,
-                  value: formatMobile(userController.user.value?.mobileNumber) ??
-                      "+91 97897 72832",
+                  value: formatMobile(userController.user.value?.mobileNumber, userController.user.value?.mobilePrefix) ??
+                      "97897 72832",
                 ),
                 Row(
                   children: [
@@ -199,17 +199,23 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 }
-String formatMobile(String? number) {
+String formatMobile(String? number, String? mobilePrefix) {
   if (number == null || number.isEmpty) return "N/A";
 
-  // already contains +91
-  if (number.startsWith("+91")) {
+  final prefix = (mobilePrefix != null && mobilePrefix.isNotEmpty)
+      ? mobilePrefix.trim()
+      : "+91"; // default fallback
+
+  // Already contains a "+" at the start → assume full number
+  if (number.startsWith("+")) {
     return number;
   }
 
-  // add prefix
-  return "+91 $number";
+  // Add prefix
+  return "$prefix $number";
 }
+
+
 
 // 🔹 Custom Widget for gray input-style fields
 class ProfileField extends StatelessWidget {
