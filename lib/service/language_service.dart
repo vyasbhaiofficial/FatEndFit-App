@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../utils/app_storage.dart';
 
-
 class LanguageService extends Translations {
   static final LanguageService _instance = LanguageService._internal();
   factory LanguageService() => _instance;
@@ -39,28 +38,28 @@ class LanguageService extends Translations {
   }
 }
 
-// how to use:
-class LanguageScreen extends StatelessWidget {
-  final languages = {
-    "English": "en",
-    "हिंदी": "hi",
-    "ગુજરાતી": "gu",
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Select Language")),
-      body: ListView(
-        children: languages.entries.map((entry) {
-          return ListTile(
-            title: Text(entry.key),
-            onTap: () {
-              LanguageService().changeLanguage(entry.value);
-            },
-          );
-        }).toList(),
-      ),
-    );
-  }
-}
+// // how to use:
+// class LanguageScreen extends StatelessWidget {
+//   final languages = {
+//     "English": "en",
+//     "हिंदी": "hi",
+//     "ગુજરાતી": "gu",
+//   };
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: const Text("Select Language")),
+//       body: ListView(
+//         children: languages.entries.map((entry) {
+//           return ListTile(
+//             title: Text(entry.key),
+//             onTap: () {
+//               LanguageService().changeLanguage(entry.value);
+//             },
+//           );
+//         }).toList(),
+//       ),
+//     );
+//   }
+// }
