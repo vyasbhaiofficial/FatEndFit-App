@@ -160,7 +160,7 @@ class AppLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SvgPicture.asset(
+    return Image.asset(
       AppImages.fatEndFitIcon,
       width: getSize(width),
       height: getSize(height),

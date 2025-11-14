@@ -18,7 +18,7 @@ class SplashScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SvgPicture.asset(
+              Image.asset(
                 AppImages.fatEndFitIcon,
                 width: 120,
                 height: 120,

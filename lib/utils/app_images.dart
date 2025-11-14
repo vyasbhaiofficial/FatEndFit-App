@@ -3,7 +3,8 @@ class AppImages {
   static const String _basePathIcon = 'assets/icons';
 
   // Example SVG
-  static const String fatEndFitIcon = '$_basePathImage/fat_end_fit_icon.svg';
+  // static const String fatEndFitIcon = '$_basePathImage/fat_end_fit_icon.svg';
+  static const String fatEndFitIcon = '$_basePathImage/DetoxPathy_LOGO.png';
 
   static const String homeBarIcon = '$_basePathIcon/home_bar_icon.svg';
   static const String liveBarIcon = '$_basePathIcon/live_bar_icon.svg';

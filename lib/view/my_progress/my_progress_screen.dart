@@ -41,7 +41,7 @@ class MyProgressScreen extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(vertical: height * 0.015),
               child: Center(
-                child: SvgPicture.asset(AppImages.fatEndFitIcon, height: height * 0.06),
+                child:Image.asset(AppImages.fatEndFitIcon, height: height * 0.06),
               ),
             ),
 
